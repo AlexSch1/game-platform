@@ -21,15 +21,25 @@ PlayState.create = function () {
 };
 
 PlayState._loadLevel = function (data) {
+    this.platforms = this.game.add.group();
+
     data.platforms.forEach(this._spawnPlatform, this);
     this._spawnCharacters({hero: data.hero});
+
+    const GRAVITY = 1200;
+    this.game.physics.arcade.gravity.y = GRAVITY;
 };
 
 
 
 // load PLATFORM
 PlayState._spawnPlatform = function (platform) {
-    this.game.add.sprite(platform.x, platform.y, platform.image);
+    let sprite = this.platforms.create(
+        platform.x, platform.y, platform.image);
+
+    this.game.physics.enable(sprite);
+
+    // this.game.add.sprite(platform.x, platform.y, platform.image);
 };
 
 PlayState._handleInput = function () {
@@ -80,13 +90,16 @@ PlayState.init = function () {
 
 
 PlayState.update = function () {
+    this._handleCollisions();
     this._handleInput();
 };
 
+PlayState._handleCollisions = function () {
+    this.game.physics.arcade.collide(this.hero, this.platforms);
+};
 
 
-
-
+// Finally, perform collision checks between the main character and the plat
 
 
 
