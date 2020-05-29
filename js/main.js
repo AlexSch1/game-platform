@@ -22,11 +22,69 @@ PlayState.create = function () {
 
 PlayState._loadLevel = function (data) {
     data.platforms.forEach(this._spawnPlatform, this);
+    this._spawnCharacters({hero: data.hero});
 };
 
+
+
+// load PLATFORM
 PlayState._spawnPlatform = function (platform) {
     this.game.add.sprite(platform.x, platform.y, platform.image);
 };
+
+PlayState._handleInput = function () {
+    if (this.keys.left.isDown) { // move hero left
+        this.hero.move(-1);
+    }
+    else if (this.keys.right.isDown) { // move hero right
+        this.hero.move(1);
+    } else {
+        this.hero.move(0);
+    }
+};
+
+// load HERO
+PlayState._spawnCharacters = function (data) {
+    // spawn hero
+    this.hero = new Hero(this.game, data.hero.x, data.hero.y);
+    this.game.add.existing(this.hero);
+};
+
+
+function Hero(game, x, y) {
+    // call Phaser.Sprite constructor
+    Phaser.Sprite.call(this, game, x, y, 'hero');
+
+    this.anchor.set(0.5, 0.5);
+    this.game.physics.enable(this);
+    this.body.collideWorldBounds = true;
+}
+
+Hero.prototype = Object.create(Phaser.Sprite.prototype);
+Hero.prototype.constructor = Hero;
+
+Hero.prototype.move = function (direction) {
+    const SPEED = 200;
+    this.body.velocity.x = direction * SPEED;
+};
+
+
+// KEY
+PlayState.init = function () {
+    this.game.renderer.renderSession.roundPixels = true;
+    this.keys = this.game.input.keyboard.addKeys({
+        left: Phaser.KeyCode.LEFT,
+        right: Phaser.KeyCode.RIGHT
+    });
+};
+
+
+PlayState.update = function () {
+    this._handleInput();
+};
+
+
+
 
 
 
